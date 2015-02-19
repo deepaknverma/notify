@@ -1,19 +1,17 @@
 /**
  * Created by deepak on 19/02/15.
  */
-var app     = require('express')();
-var socket  = require('socket.io');
-var http    = require('http');
+var app         = require('express')();
+var socket      = require('socket.io');
+var http        = require('http');
+var queryProcess= require('./middleware/query');
 //var routes  = require('./routes');
 
 var port    = process.env.PORT || 3000;
+var server  = app.listen(port);
+var io      = socket.listen(server); // this tells socket.io to use our express server
 
-
-var server = app.listen(port);
-
-var io = socket.listen(server); // this tells socket.io to use our express server
-
-var clients={};
+var clients = {};
 
 io.sockets.on('connection', function (socket) {
 
@@ -21,19 +19,24 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('user_auth', function(data){
 
-        console.log(data.currenttoken);
-        console.log(data.currentuser);
+        var queryData = new queryProcess(data.usertoken,data.uid );
+
+        console.log(data.usertoken);
+        console.log(data.uid);
+
         // Store a reference to your socket ID
-        clients[data.currentuser] = {
+        clients[data.uid] = {
             "socket": socket.id
         };
 
-        console.log("Sending: " + data.currenttoken + " to " + data.currentuser);
+        if (clients[data.uid]){
+            queryData.getData(function(err, result){
+                //console.log(result);
+                io.sockets.connected[clients[data.uid].socket].emit("notification", result);
+            });
 
-        if (clients[data.currentuser]){
-            io.sockets.connected[clients[data.currentuser].socket].emit("notification", { msg: 'Hi!'+data.currentuser+' The world is round, there is no up or down.' });
         } else {
-            console.log("User does not exist: " + data.currentuser);
+            console.log("User does not exist: " + data.uid);
         }
     });
 

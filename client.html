@@ -17,23 +17,28 @@
         function getNotifications() {
             // Connectivity
             socket.emit('user_auth', {
-                currentuser : '<?php echo $_GET["vetid"]?>',
-                currenttoken : 'allschooltocinema'
+                uid : 'VRD2f5fEByywP',
+                usertoken : 'allschooltocinema'
             });
         }
 
         // on every message recived we print the new datas inside the #container div
         socket.on('notification', function (data) {
-            console.log(data);
-            console.log('mydata:' + data.msg);
+            var result 	= JSON.parse(data);
+            var msgs 	= result.notifications;
+            $.each(msgs, function( index, value ) {
+                $('#container').append('<li>' + msgs[index].message + '</li>');
+            });
+            $('#totalCount').html(result.count);
         });
 
     </script>
 </head>
 <body>
-<h1> THIS IS A TEXT NOTIFICATION</h1>
-<div id="container"></div>
-<time></time>
+<h1> Total Notifications: <span id="totalCount"></span></h1>
+<div id="container">
+    <ul id="msgs"></ul>
+</div>
 
 </body>
 </html>
