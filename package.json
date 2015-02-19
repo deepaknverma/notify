@@ -1,0 +1,14 @@
+{
+  "name": "notify",
+  "version": "1.0.0",
+  "description": "Notification server for Vetnetwork",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies":{
+
+  },
+  "author": "Deepak Verma <mailto: info@deepakverma.com.au>",
+  "license": "MIT"
+}
